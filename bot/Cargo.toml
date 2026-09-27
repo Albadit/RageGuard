@@ -1,0 +1,58 @@
+[package]
+name = "rageguard"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+description = "Discord bot that detects repeated angry speech from a monitored user and applies a timeout."
+license = "MIT"
+publish = false
+
+[lib]
+name = "rageguard"
+path = "src/lib.rs"
+
+[[bin]]
+name = "rageguard"
+path = "src/main.rs"
+
+[dependencies]
+# Discord API + gateway. `voice` exposes the hooks songbird needs.
+serenity = { version = "0.12.5", default-features = false, features = [
+    "builder",
+    "cache",
+    "chrono",
+    "client",
+    "gateway",
+    "http",
+    "model",
+    "rustls_backend",
+    "utils",
+    "voice",
+] }
+# Voice connections. `receive` enables decoding other users' audio; 0.6 speaks DAVE (E2EE).
+songbird = { version = "0.6.0", features = ["receive"] }
+
+tokio = { version = "1.40", features = ["macros", "rt-multi-thread", "sync", "time", "signal"] }
+tokio-util = "0.7"
+async-trait = "0.1"
+parking_lot = "0.12"
+
+reqwest = { version = "0.12", default-features = false, features = ["json", "multipart", "rustls-tls"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.9"
+dotenvy = "0.15"
+
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+
+thiserror = "2"
+anyhow = "1"
+
+[dev-dependencies]
+wiremock = "0.6"
+tokio = { version = "1.40", features = ["macros", "rt-multi-thread", "test-util"] }
+
+[profile.dev.package."*"]
+# Dependencies (opus, resampler, crypto) are much faster when optimised, even in debug builds.
+opt-level = 2

@@ -1,0 +1,36 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "RageGuard bot (LLDB)",
+            "type": "lldb",
+            "request": "launch",
+            "cargo": {
+                "args": ["build", "--bin=rageguard", "--manifest-path=${workspaceFolder}/bot/Cargo.toml"],
+                "filter": { "name": "rageguard", "kind": "bin" }
+            },
+            "cwd": "${workspaceFolder}/bot",
+            "env": { "RUST_BACKTRACE": "1" }
+        },
+        {
+            "name": "RageGuard bot (Windows debugger)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "preLaunchTask": "cargo build",
+            "program": "${workspaceFolder}/bot/target/debug/rageguard.exe",
+            "cwd": "${workspaceFolder}/bot",
+            "environment": [{ "name": "RUST_BACKTRACE", "value": "1" }],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "AI service (uvicorn)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": ["app.main:app", "--host", "127.0.0.1", "--port", "8000"],
+            "cwd": "${workspaceFolder}/ai-service",
+            "python": "${workspaceFolder}/ai-service/.venv/Scripts/python.exe",
+            "justMyCode": true
+        }
+    ]
+}

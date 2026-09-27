@@ -1,0 +1,34 @@
+# RageGuard detection configuration.
+#
+# Secrets (token, IDs) belong in .env, not here. Every value below is optional; omitted values use
+# the defaults shown. Threshold, detections, window and timeout can also be changed per
+# server at runtime with /anger-config (in memory only; this file is the startup default).
+
+[anger_detection]
+# Minimum "Angry" probability (0.0–1.0) for a segment to count as an angry detection.
+threshold = 0.70
+# Angry detections required inside the window before moderation triggers.
+required_detections = 2
+# Sliding window, in seconds, that the detections must fall within.
+window_seconds = 15
+# Length of the Discord timeout, in minutes (max 40320 = 28 days).
+timeout_minutes = 1
+# Length of each audio segment sent to the AI service (2–5 seconds recommended).
+segment_seconds = 3
+# Emotions that count as anger; their scores are added up and compared with the threshold.
+# The model often labels real angry shouting as "Disgust", so both count by default.
+anger_emotions = ["Angry", "Disgust"]
+
+[audio]
+# When the speaker goes quiet, partial segments shorter than this are discarded.
+min_segment_seconds = 1.0
+# A partial segment is analysed after this much continuous silence (milliseconds).
+silence_flush_ms = 800
+# Segments waiting for analysis before new ones are dropped (back-pressure).
+max_pending_segments = 2
+
+[ai_service]
+# Maximum time for one /analyze request, in seconds.
+request_timeout_seconds = 10
+# Maximum time to establish a connection, in seconds.
+connect_timeout_seconds = 3

@@ -1,0 +1,44 @@
+# Starts the Python AI service:
+#   docker compose up -d
+#
+# Optionally run the bot in a container too (reads .env):
+#   docker compose --profile bot up -d --build
+
+name: rageguard
+
+services:
+  ai-service:
+    build: ./ai-service
+    image: rageguard-ai:latest
+    ports:
+      # Bound to localhost only: the service has no authentication and must not be public.
+      # If 8000 is taken, set AI_SERVICE_PORT (and AI_SERVICE_URL in .env) to another port.
+      - "127.0.0.1:${AI_SERVICE_PORT:-8000}:8000"
+    environment:
+      MODEL_ID: ${MODEL_ID:-Dpngtm/wav2vec2-emotion-recognition}
+      LOG_LEVEL: ${AI_LOG_LEVEL:-info}
+    volumes:
+      # Model weights are cached here so restarts do not re-download them.
+      - hf-cache:/models
+    restart: unless-stopped
+
+  bot:
+    profiles: ["bot"]
+    build: ./bot
+    image: rageguard-bot:latest
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      AI_SERVICE_URL: http://ai-service:8000
+    volumes:
+      # Keeps the log channel chosen with /anger-setup across restarts and rebuilds.
+      - bot-data:/app/data
+    depends_on:
+      ai-service:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  hf-cache:
+  bot-data:

@@ -1,0 +1,9 @@
+# Test/dev dependencies. The test suite uses a fake model, so it does not need
+# torch or transformers: `pip install -r requirements-dev.txt` is enough to run it.
+fastapi>=0.115,<1
+python-multipart>=0.0.9
+numpy>=1.26,<3
+soundfile>=0.12.1,<1
+soxr>=0.3.7,<2
+httpx2>=2.0
+pytest>=8
